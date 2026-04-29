@@ -4,7 +4,362 @@
 .nm-wrap{max-width:480px;margin:0 auto;background:#f5f2ee;font-family:'Noto Serif JP',serif;font-weight:200;border-radius:12px;overflow:hidden;box-shadow:0 0 60px rgba(0,0,0,0.12);}
 .nm-wrap *{box-sizing:border-box;margin:0;padding:0;}
 .nm-header{background:#0a0a0a;padding:20px 20px 0;text-align:center;}
-.nm-brand{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.4em;color:rgba(201,169,110,0.6);margin-bottom:6px;}
+.nm-brand{font-family:'Spaceimport { useState } from "react";
+import { Lock, Wifi, BookOpen, Camera, ChevronRight, Check, AlertCircle, Star } from "lucide-react";
+
+const GOLD = "#c9a96e";
+const BLACK = "#0a0a0a";
+const CREAM = "#f5f2ee";
+
+// コード設定（実際のコードに変更してください）
+const CODES = {
+  purchaser: "sfl",
+  wireless: "wc202603",
+};
+
+export default function App() {
+  const [tab, setTab] = useState("free");
+  const [unlocked, setUnlocked] = useState({ purchaser: false, wireless: false });
+  const [code, setCode] = useState("");
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
+  const handleUnlock = (target) => {
+    if (code.toLowerCase().trim() === CODES[target]) {
+      setUnlocked((prev) => ({ ...prev, [target]: true }));
+      setSuccess("アンロックしました");
+      setError("");
+      setCode("");
+      setTimeout(() => setSuccess(""), 2000);
+    } else {
+      setError("コードが正しくありません");
+      setSuccess("");
+    }
+  };
+
+  return (
+    <div style={{ background: CREAM, minHeight: "100vh", fontFamily: "'Georgia', serif", maxWidth: 480, margin: "0 auto", boxShadow: "0 0 60px rgba(0,0,0,0.15)" }}>
+
+      {/* ヘッダー */}
+      <div style={{ background: BLACK, padding: "24px 24px 0", textAlign: "center" }}>
+        <p style={{ fontFamily: "monospace", fontSize: 9, letterSpacing: "0.4em", color: "rgba(201,169,110,0.7)", textTransform: "uppercase", marginBottom: 8 }}>Nostalgista</p>
+        <h1 style={{ fontFamily: "'Georgia', serif", fontSize: 22, fontWeight: 300, color: CREAM, letterSpacing: "0.05em", marginBottom: 24 }}>
+          Digital Manual
+        </h1>
+
+        {/* タブ */}
+        <div style={{ display: "flex", gap: 2 }}>
+          {[
+            { id: "free", label: "基本ガイド", icon: BookOpen },
+            { id: "purchaser", label: "購入者専用", icon: Camera },
+            { id: "wireless", label: "Wireless Pro", icon: Wifi },
+          ].map(({ id, label, icon: Icon }) => {
+            const isActive = tab === id;
+            const isLocked = (id === "purchaser" && !unlocked.purchaser) || (id === "wireless" && !unlocked.wireless);
+            return (
+              <button
+                key={id}
+                onClick={() => setTab(id)}
+                style={{
+                  flex: 1,
+                  padding: "10px 4px",
+                  background: isActive ? CREAM : "rgba(255,255,255,0.07)",
+                  border: "none",
+                  borderRadius: "8px 8px 0 0",
+                  cursor: "pointer",
+                  color: isActive ? BLACK : "rgba(245,242,238,0.4)",
+                  fontSize: 10,
+                  fontFamily: "monospace",
+                  letterSpacing: "0.05em",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  gap: 4,
+                  transition: "all 0.2s",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                  <Icon size={12} />
+                  {isLocked && <Lock size={9} style={{ color: GOLD, opacity: 0.8 }} />}
+                </div>
+                <span>{label}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* コンテンツ */}
+      <div style={{ padding: 24 }}>
+
+        {/* ── 基本ガイド ── */}
+        {tab === "free" && (
+          <div>
+            <Section label="Basic" title="規格性撮影の基本" />
+
+            <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 32 }}>
+              {[
+                { n: "01", title: "ピントは側切歯に合わせる", body: "F22〜25の絞りで被写界深度を稼ぎながら、側切歯を基準点にオートフォーカスをロックする。" },
+                { n: "02", title: "撮影倍率は固定で運用する", body: "毎回同じ倍率で撮ることで経過比較が可能になる。レンズのズームリングにテープでマーキングを。" },
+                { n: "03", title: "バリアングルを全開にする", body: "液晶モニターを全開にし、カメラを口腔内と平行に構えることで歪みのない正面像が撮影できる。" },
+              ].map(({ n, title, body }) => (
+                <div key={n} style={{ background: "#fff", borderRadius: 12, padding: "20px 20px", borderLeft: `3px solid ${GOLD}` }}>
+                  <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+                    <span style={{ fontFamily: "monospace", fontSize: 10, color: GOLD, minWidth: 24, paddingTop: 2 }}>{n}</span>
+                    <div>
+                      <p style={{ fontSize: 14, fontWeight: "bold", marginBottom: 6, color: BLACK }}>{title}</p>
+                      <p style={{ fontSize: 12, color: "#666", lineHeight: 1.8 }}>{body}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* 購入者へ誘導 */}
+            <div
+              onClick={() => setTab("purchaser")}
+              style={{ background: BLACK, borderRadius: 16, padding: 24, textAlign: "center", cursor: "pointer", position: "relative", overflow: "hidden" }}
+            >
+              <div style={{ position: "absolute", top: -20, right: -20, width: 100, height: 100, background: `radial-gradient(circle, rgba(201,169,110,0.15), transparent)` }} />
+              <p style={{ fontFamily: "monospace", fontSize: 9, letterSpacing: "0.3em", color: GOLD, marginBottom: 12 }}>PURCHASER ONLY</p>
+              <p style={{ fontSize: 14, color: CREAM, marginBottom: 16, lineHeight: 1.7, fontWeight: 300 }}>
+                カメラ購入者限定の<br />詳細設定ガイドを見る
+              </p>
+              <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "10px 24px", border: `1px solid ${GOLD}`, color: GOLD, fontSize: 11, fontFamily: "monospace", letterSpacing: "0.15em", borderRadius: 4 }}>
+                アンロック <ChevronRight size={12} />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── 購入者専用 ── */}
+        {tab === "purchaser" && (
+          <div>
+            {!unlocked.purchaser ? (
+              <LockScreen
+                dark={false}
+                title="購入者専用ガイド"
+                subtitle={"お届けした機材に同梱の\nアンロックコードを入力してください。"}
+                code={code}
+                setCode={setCode}
+                error={error}
+                success={success}
+                onUnlock={() => handleUnlock("purchaser")}
+              />
+            ) : (
+              <div>
+                <Section label="Purchaser" title="詳細設定ガイド" />
+
+                {/* 推奨設定 */}
+                <div style={{ background: "#fff", borderRadius: 12, padding: 20, marginBottom: 16 }}>
+                  <p style={{ fontFamily: "monospace", fontSize: 9, letterSpacing: "0.3em", color: GOLD, marginBottom: 16 }}>RECOMMENDED SETTINGS</p>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 16 }}>
+                    {[
+                      { label: "Mode", value: "M（マニュアル）" },
+                      { label: "Shutter", value: "1/160" },
+                      { label: "F値", value: "F22〜25" },
+                      { label: "ISO", value: "400〜800" },
+                      { label: "WB", value: "フラッシュ" },
+                      { label: "AF", value: "1点スポット" },
+                    ].map(({ label, value }) => (
+                      <div key={label} style={{ background: "#f7f5f1", padding: "12px", borderRadius: 8 }}>
+                        <p style={{ fontFamily: "monospace", fontSize: 9, color: "#aaa", marginBottom: 4 }}>{label}</p>
+                        <p style={{ fontSize: 13, fontWeight: "bold", color: BLACK }}>{value}</p>
+                      </div>
+                    ))}
+                  </div>
+                  <div style={{ background: "#f0ede7", padding: 14, borderRadius: 8, display: "flex", gap: 10 }}>
+                    <AlertCircle size={14} style={{ color: GOLD, flexShrink: 0, marginTop: 2 }} />
+                    <p style={{ fontSize: 12, color: "#555", lineHeight: 1.8 }}>液晶は必ずバリアングルを全開にし、口腔内と平行に構えてください。</p>
+                  </div>
+                </div>
+
+                {/* 9枚法の順番 */}
+                <div style={{ background: "#fff", borderRadius: 12, padding: 20, marginBottom: 24 }}>
+                  <p style={{ fontFamily: "monospace", fontSize: 9, letterSpacing: "0.3em", color: GOLD, marginBottom: 16 }}>9-SHOT PROTOCOL</p>
+                  {["正面", "右上", "右下", "左上", "左下", "上顎（ミラー）", "前歯あおり", "下顎（ミラー）", "正面半開口"].map((s, i) => (
+                    <div key={i} style={{ display: "flex", gap: 12, alignItems: "center", padding: "8px 0", borderBottom: i < 8 ? "1px solid #f0ede7" : "none" }}>
+                      <span style={{ fontFamily: "monospace", fontSize: 10, color: GOLD, minWidth: 20 }}>0{i + 1}</span>
+                      <span style={{ fontSize: 13, color: "#333" }}>{s}</span>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Wireless Connectへの誘導 */}
+                <div
+                  onClick={() => setTab("wireless")}
+                  style={{ background: BLACK, borderRadius: 16, padding: 28, cursor: "pointer", position: "relative", overflow: "hidden" }}
+                >
+                  <div style={{ position: "absolute", top: -30, right: -30, width: 120, height: 120, background: `radial-gradient(circle, rgba(201,169,110,0.12), transparent)` }} />
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+                    <Wifi size={14} style={{ color: GOLD }} />
+                    <p style={{ fontFamily: "monospace", fontSize: 9, letterSpacing: "0.3em", color: GOLD }}>WIRELESS CONNECT PRO</p>
+                  </div>
+                  <p style={{ fontSize: 20, color: CREAM, fontWeight: 300, marginBottom: 8, lineHeight: 1.4 }}>
+                    撮った瞬間、<br />iPadに届く。
+                  </p>
+                  <p style={{ fontSize: 12, color: "rgba(245,242,238,0.45)", lineHeight: 1.8, marginBottom: 20 }}>
+                    SDカードを抜く作業を完全になくし、撮影後10秒でスライドが自動完成。患者コンサルの質が根本から変わります。
+                  </p>
+                  <div style={{ display: "flex", gap: 16, marginBottom: 20 }}>
+                    {["自動転送", "AI品質チェック", "スライド自動生成"].map((f) => (
+                      <div key={f} style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                        <Star size={10} style={{ color: GOLD }} />
+                        <span style={{ fontFamily: "monospace", fontSize: 9, color: "rgba(201,169,110,0.8)" }}>{f}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "12px 28px", background: GOLD, color: BLACK, fontSize: 11, fontFamily: "monospace", letterSpacing: "0.15em", borderRadius: 4, fontWeight: "bold" }}>
+                    詳細を見る <ChevronRight size={12} />
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── Wireless Connect Pro ── */}
+        {tab === "wireless" && (
+          <div>
+            {!unlocked.wireless ? (
+              <div>
+                {/* プレミアム感のある予告エリア */}
+                <div style={{ background: BLACK, borderRadius: 16, padding: 28, marginBottom: 20, position: "relative", overflow: "hidden" }}>
+                  <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 70% 30%, rgba(201,169,110,0.08), transparent 60%)" }} />
+                  <p style={{ fontFamily: "monospace", fontSize: 9, letterSpacing: "0.4em", color: "rgba(201,169,110,0.6)", marginBottom: 20 }}>WIRELESS CONNECT PRO</p>
+                  <h2 style={{ fontSize: 26, color: CREAM, fontWeight: 300, lineHeight: 1.3, marginBottom: 16 }}>
+                    撮影した瞬間、<br /><em style={{ color: GOLD, fontStyle: "italic" }}>すべてが自動になる。</em>
+                  </h2>
+
+                  {/* 機能一覧（ぼかしてプレビュー） */}
+                  <div style={{ position: "relative", marginBottom: 24 }}>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 10, filter: "blur(4px)", opacity: 0.4, pointerEvents: "none", userSelect: "none" }}>
+                      {["NASへFTP自動転送（1〜2秒）", "AI品質チェック（ぼけ・露出・ミラー曇り）", "Googleスライド自動生成", "患者フォルダ自動作成", "iPadへのリアルタイム通知"].map((f) => (
+                        <div key={f} style={{ display: "flex", gap: 10, alignItems: "center" }}>
+                          <Check size={12} style={{ color: GOLD, flexShrink: 0 }} />
+                          <span style={{ fontSize: 13, color: CREAM }}>{f}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <div style={{ background: "rgba(10,10,10,0.7)", padding: "8px 20px", borderRadius: 20, display: "flex", alignItems: "center", gap: 8 }}>
+                        <Lock size={12} style={{ color: GOLD }} />
+                        <span style={{ fontFamily: "monospace", fontSize: 10, color: GOLD }}>LOCKED</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <LockScreen
+                  dark={false}
+                  title="アンロックコードを入力"
+                  subtitle={"WirelessConnect Pro のアクセスコードを\n入力してください。"}
+                  code={code}
+                  setCode={setCode}
+                  error={error}
+                  success={success}
+                  onUnlock={() => handleUnlock("wireless")}
+                />
+
+                {/* 購入を促すCTA */}
+                <div style={{ marginTop: 20, padding: 20, border: `1px solid rgba(201,169,110,0.25)`, borderRadius: 12, textAlign: "center" }}>
+                  <p style={{ fontSize: 12, color: "#888", lineHeight: 1.9, marginBottom: 16 }}>
+                    コードをお持ちでない方は<br />WirelessConnect Pro Setをご購入ください。
+                  </p>
+                  <a
+                    href="https://nostalgista.co.jp/?page_id=10346"
+                    style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "12px 28px", border: `1px solid ${GOLD}`, color: GOLD, fontSize: 11, fontFamily: "monospace", letterSpacing: "0.15em", textDecoration: "none", borderRadius: 4 }}
+                  >
+                    詳細・購入はこちら <ChevronRight size={12} />
+                  </a>
+                </div>
+              </div>
+            ) : (
+              <div>
+                <Section label="Wireless Pro" title="運用マニュアル" />
+
+                <div style={{ background: "#fff", borderRadius: 12, padding: 20, marginBottom: 16 }}>
+                  <p style={{ fontFamily: "monospace", fontSize: 9, letterSpacing: "0.3em", color: GOLD, marginBottom: 16 }}>SETUP FLOW</p>
+                  {[
+                    { step: "01", title: "NASをLANに接続", body: "UGREEN NASのLANケーブルをルーターに挿す。電源ON後、約1分で起動完了。" },
+                    { step: "02", title: "カメラのFTP設定", body: "Z50IIのネットワーク設定からNASのIPアドレスを入力。「撮影後自動転送」をONに。" },
+                    { step: "03", title: "QRコードで患者フォルダ作成", body: "WirelessConnectアプリで患者番号を入力→QRを表示→カメラで撮影。フォルダが自動生成される。" },
+                    { step: "04", title: "撮影→自動転送", body: "シャッターを押した瞬間、NASへ転送開始。1〜2秒でiPadに通知が届く。" },
+                  ].map(({ step, title, body }) => (
+                    <div key={step} style={{ display: "flex", gap: 16, padding: "16px 0", borderBottom: step !== "04" ? "1px solid #f0ede7" : "none" }}>
+                      <span style={{ fontFamily: "monospace", fontSize: 10, color: GOLD, minWidth: 24, paddingTop: 2 }}>{step}</span>
+                      <div>
+                        <p style={{ fontSize: 14, fontWeight: "bold", marginBottom: 4, color: BLACK }}>{title}</p>
+                        <p style={{ fontSize: 12, color: "#666", lineHeight: 1.8 }}>{body}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div style={{ background: "#f0ede7", borderRadius: 12, padding: 20 }}>
+                  <p style={{ fontFamily: "monospace", fontSize: 9, letterSpacing: "0.3em", color: "#888", marginBottom: 12 }}>TROUBLESHOOTING</p>
+                  <p style={{ fontSize: 12, color: "#555", lineHeight: 2 }}>
+                    転送できない場合はIPアドレスを確認。漢字フォルダは使用不可。ルーターは二重ルーターを避けブリッジモードに。
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* フッター */}
+      <div style={{ padding: "24px", borderTop: "1px solid rgba(26,24,20,0.08)", textAlign: "center" }}>
+        <p style={{ fontFamily: "monospace", fontSize: 9, color: "#bbb", letterSpacing: "0.2em", marginBottom: 16 }}>SUPPORT</p>
+        <a
+          href="https://lin.ee/u7blH2E"
+          style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "14px 32px", background: "#06C755", color: "#fff", fontSize: 12, fontFamily: "monospace", letterSpacing: "0.1em", textDecoration: "none", borderRadius: 4 }}
+        >
+          LINEで相談する
+        </a>
+      </div>
+    </div>
+  );
+}
+
+function Section({ label, title }) {
+  return (
+    <div style={{ marginBottom: 24 }}>
+      <p style={{ fontFamily: "monospace", fontSize: 9, letterSpacing: "0.4em", color: GOLD, marginBottom: 8 }}>{label.toUpperCase()}</p>
+      <h2 style={{ fontSize: 22, fontWeight: 300, color: BLACK, letterSpacing: "-0.01em" }}>{title}</h2>
+      <div style={{ width: 32, height: 1, background: GOLD, marginTop: 12 }} />
+    </div>
+  );
+}
+
+function LockScreen({ title, subtitle, code, setCode, error, success, onUnlock }) {
+  return (
+    <div style={{ background: "#fff", borderRadius: 16, padding: 28, textAlign: "center" }}>
+      <div style={{ width: 56, height: 56, background: "#f7f5f1", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px" }}>
+        <Lock size={24} style={{ color: GOLD }} />
+      </div>
+      <h3 style={{ fontSize: 16, fontWeight: 300, marginBottom: 8, color: BLACK }}>{title}</h3>
+      <p style={{ fontSize: 12, color: "#888", lineHeight: 1.9, marginBottom: 24, whiteSpace: "pre-line" }}>{subtitle}</p>
+      <input
+        type="text"
+        value={code}
+        onChange={(e) => setCode(e.target.value)}
+        onKeyDown={(e) => e.key === "Enter" && onUnlock()}
+        placeholder="コードを入力"
+        style={{ width: "100%", padding: "14px", background: "#f7f5f1", border: "none", borderRadius: 8, textAlign: "center", fontSize: 14, letterSpacing: "0.2em", outline: "none", marginBottom: 12, fontFamily: "monospace" }}
+      />
+      <button
+        onClick={onUnlock}
+        style={{ width: "100%", padding: "14px", background: BLACK, color: CREAM, border: "none", borderRadius: 8, fontSize: 12, fontFamily: "monospace", letterSpacing: "0.2em", cursor: "pointer" }}
+      >
+        認証する
+      </button>
+      {error && <p style={{ marginTop: 12, fontSize: 11, color: "#c0392b" }}>{error}</p>}
+      {success && <p style={{ marginTop: 12, fontSize: 11, color: "#27ae60" }}>{success}</p>}
+    </div>
+  );
+}
+ Mono',monospace;font-size:9px;letter-spacing:0.4em;color:rgba(201,169,110,0.6);margin-bottom:6px;}
 .nm-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:#f5f2ee;letter-spacing:0.05em;margin-bottom:20px;}
 .nm-tabs{display:flex;gap:2px;}
 .nm-tab{flex:1;padding:10px 4px;background:rgba(255,255,255,0.06);border:none;border-radius:6px 6px 0 0;cursor:pointer;color:rgba(245,242,238,0.4);font-size:10px;font-family:'Space Mono',monospace;letter-spacing:0.04em;transition:all 0.2s;}
